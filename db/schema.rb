@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2019_01_30_235224) do
 
-  create_table "clients", force: :cascade do |t|
+  create_table "comments", force: :cascade do |t|
     t.text "content"
     t.integer "post_id"
     t.datetime "created_at", null: false
