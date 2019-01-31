@@ -38,7 +38,7 @@ post '/new' do
     erb :new
   end
 end
-# ----------------------------------------
+
 get "/details/:post_id" do
 	# получаем параметр из URL
 	post_id = params[:post_id]
@@ -51,8 +51,8 @@ get "/details/:post_id" do
 
 	#отображаем комменты к этому посту
 
-  @rows = Comment.where(post_id: post_id)
-	                  # @rows = @db.execute 'select * from Comments  where post_id = ? order by id desc', [post_id]
+  @rows = Comment.where(post_id: post_id).order 'created_at desc'
+  # Это примерно следующее -  @rows = @db.execute 'select * from Comments  where post_id = ? order by id desc', [post_id]
   #возвращаем представление details.erb
 	erb :details
 end
@@ -67,10 +67,9 @@ post "/details/:post_id" do
 		redirect("/details/" + com.post_id.to_s)
 	else
 		@error = com.errors.full_messages.first
-		@rows = Comment.where(post_id: com.post_id)
+		@rows = Comment.where(post_id: com.post_id).order 'created_at desc'
 		@row = Post.find(com.post_id)
-		# erb "#{@error}"
-		# redirect("/details/" + com.post_id.to_s)
+
 		erb :details
 	end
 
