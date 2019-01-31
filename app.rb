@@ -14,7 +14,7 @@ class Post < ActiveRecord::Base
 end
 
 class Comment <ActiveRecord::Base
-
+	validates :content, presence: true, length: {minimum: 3 }
 end
 
 get '/' do
@@ -57,3 +57,21 @@ get "/details/:post_id" do
 	erb :details
 end
 
+post "/details/:post_id" do
+	# получаем параметр из URL
+  com = Comment.new
+	com.post_id = params[:post_id]
+	com.content = params[:comment]
+
+	if com.save
+		redirect("/details/" + com.post_id.to_s)
+	else
+		@error = com.errors.full_messages.first
+		@rows = Comment.where(post_id: com.post_id)
+		@row = Post.find(com.post_id)
+		# erb "#{@error}"
+		# redirect("/details/" + com.post_id.to_s)
+		erb :details
+	end
+
+end
