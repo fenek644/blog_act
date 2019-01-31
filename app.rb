@@ -8,6 +8,9 @@ set :database, "sqlite3:blog_act.db"
 
 class Post < ActiveRecord::Base
 
+	validates :author, presence: true, length: {minimum: 3 }
+	validates :content, presence: true
+
 end
 
 class Comment <ActiveRecord::Base
@@ -15,9 +18,23 @@ class Comment <ActiveRecord::Base
 end
 
 get '/' do
-	erb "Hello! <a href=\"https://github.com/bootstrap-ruby/sinatra-bootstrap\">Original</a> pattern has been modified for <a href=\"http://rubyschool.us/\">Ruby School</a>"			
+	@posts = Post.order 'created_at desc'
+	erb :index
 end
 
-get '/blabla' do
-	erb "Hello World"
+get '/new' do
+  @p = Post.new
+	erb :new
+end
+
+post '/new' do
+
+  @p = Post.new params[:post]
+
+  if @p.save
+    redirect('/')
+  else
+    @error = @p.errors.full_messages.first
+    erb :new
+  end
 end
