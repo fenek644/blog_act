@@ -8,12 +8,17 @@ set :database, "sqlite3:blog_act.db"
 
 class Post < ActiveRecord::Base
 
+	has_many  :comments
+
 	validates :author, presence: true, length: {minimum: 3 }
 	validates :content, presence: true
 
 end
 
 class Comment <ActiveRecord::Base
+
+	belongs_to :post
+
 	validates :content, presence: true, length: {minimum: 3 }
 end
 
@@ -50,8 +55,8 @@ get "/details/:post_id" do
 	@row = result
 
 	#отображаем комменты к этому посту
-
-  @rows = Comment.where(post_id: post_id).order 'created_at desc'
+  @rows = @row.comments.order 'created_at desc'
+  # @rows = Comment.where(post_id: post_id).order 'created_at desc'
   # Это примерно следующее -  @rows = @db.execute 'select * from Comments  where post_id = ? order by id desc', [post_id]
   #возвращаем представление details.erb
 	erb :details
@@ -67,8 +72,10 @@ post "/details/:post_id" do
 		redirect("/details/" + com.post_id.to_s)
 	else
 		@error = com.errors.full_messages.first
-		@rows = Comment.where(post_id: com.post_id).order 'created_at desc'
 		@row = Post.find(com.post_id)
+    @rows = @row.comments.order 'created_at desc'
+		# @rows = Comment.where(post_id: com.post_id).order 'created_at desc'
+
 
 		erb :details
 	end
