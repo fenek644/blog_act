@@ -38,3 +38,22 @@ post '/new' do
     erb :new
   end
 end
+# ----------------------------------------
+get "/details/:post_id" do
+	# получаем параметр из URL
+	post_id = params[:post_id]
+
+  result = Post.find(post_id)
+
+	# получаем объект, соответствующий строке
+
+	@row = result
+
+	#отображаем комменты к этому посту
+
+  @rows = Comment.where(post_id: post_id)
+	                  # @rows = @db.execute 'select * from Comments  where post_id = ? order by id desc', [post_id]
+  #возвращаем представление details.erb
+	erb :details
+end
+
